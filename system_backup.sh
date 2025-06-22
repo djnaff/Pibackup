@@ -4,7 +4,7 @@
 # Djn-
 #
 # Usage:
-#   ./system_backup.sh [device] [backup_path] [retention_days] [compression]
+#   /system_backup.sh [device] [backup_path] [retention_days] [compression]
 #
 #   - device:           Optional. Default is /dev/mmcblk0
 #   - backup_path:      Optional. Default is /mnt/pi
@@ -12,13 +12,13 @@
 #   - compression:      Optional. true or false. Default is true
 #
 # Examples:
-#   ./system_backup.sh                          # Run with all defaults
-#   ./system_backup.sh /dev/sda                 # Override device only
-#   ./system_backup.sh /dev/sda /mnt/backups    # Override device and backup path
-#   ./system_backup.sh /dev/sda /mnt/backups 180 false  # Full control
+#   system_backup.sh                          # Run with all defaults
+#   system_backup.sh /dev/sda                 # Override device only
+#   system_backup.sh /dev/sda /mnt/backups    # Override device and backup path
+#   system_backup.sh /dev/sda /mnt/backups 180 false  # Full control
 
 # Defaults can be changed
-DEFAULT_DEVICE="/dev/mmcblk0"
+DEFAULT_DEVICE="/mnt/pi"
 DEFAULT_BACKUP_PATH="/srv/dev-disk-by-label-elements/Legion/pibackups" #must be on a mounted drive and not local
 DEFAULT_RETENTION_DAYS=365
 DEFAULT_COMPRESSION=true #takes a long time but recovers more space
