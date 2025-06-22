@@ -7,7 +7,7 @@
 #   ./system_backup.sh [device] [backup_path] [retention_days] [compression]
 #
 #   - device:           Optional. Default is /dev/mmcblk0
-#   - backup_path:      Optional. Default is /srv/dev-disk-by-label-elements/Legion/pibackups
+#   - backup_path:      Optional. Default is /mnt/pi
 #   - retention_days:   Optional. Default is 365
 #   - compression:      Optional. true or false. Default is true
 #
@@ -17,9 +17,9 @@
 #   ./system_backup.sh /dev/sda /mnt/backups    # Override device and backup path
 #   ./system_backup.sh /dev/sda /mnt/backups 180 false  # Full control
 
-# Defaults
+# Defaults can be changed
 DEFAULT_DEVICE="/dev/mmcblk0"
-DEFAULT_BACKUP_PATH="/srv/dev-disk-by-label-elements/Legion/pibackups"
+DEFAULT_BACKUP_PATH="/mnt/pibackups" #must be on a mounted drive and not local
 DEFAULT_RETENTION_DAYS=365
 DEFAULT_COMPRESSION=true
 PISHRINK_URL="https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh"
@@ -51,6 +51,16 @@ mkdir -p "$BACKUP_PATH" || {
   echo "❌ Failed to create backup directory: $BACKUP_PATH"
   exit 1
 }
+
+# Check if backup path is on local root filesystem
+mnt=$(findmnt -n -o TARGET --target "$BACKUP_PATH")
+
+if [[ "$mnt" == "/" ]]; then
+  echo "❌ Error: Backup path ($BACKUP_PATH) is on the local root filesystem (local disk). Aborting."
+  exit 1
+else
+  echo "✅ Backup path is on a mounted filesystem (mount point: $mnt)"
+fi
 
 # Check and install required PiShrink dependencies
 echo "🔍 Checking PiShrink prerequisites..."
