@@ -18,8 +18,8 @@
 #   system_backup.sh /dev/sda /mnt/backups 180 false  # Full control
 
 # Defaults can be changed
-DEFAULT_DEVICE="/mnt/pi"
-DEFAULT_BACKUP_PATH="/srv/dev-disk-by-label-elements/Legion/pibackups" #must be on a mounted drive and not local
+DEFAULT_DEVICE="/dev/mmcblk0"
+DEFAULT_BACKUP_PATH="/mnt/pi" #must be on a mounted drive and not local
 DEFAULT_RETENTION_DAYS=365
 DEFAULT_COMPRESSION=true #takes a long time but recovers more space
 PISHRINK_URL="https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh"
