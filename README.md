@@ -16,4 +16,4 @@ system_backup.sh [device] [backup_path] [retention_days] [compression]
   - system_backup.sh /dev/sda /mnt/backups 180 false  # Full control
 
 Install
-wget -qO /usr/local/bin/system_backup.sh https://raw.githubusercontent.com/djnaff/Pibackup/refs/heads/main/system_backup.sh && chmod +x /usr/local/bin/system_backup.sh
+- wget -qO /usr/local/bin/system_backup.sh https://raw.githubusercontent.com/djnaff/Pibackup/refs/heads/main/system_backup.sh && chmod +x /usr/local/bin/system_backup.sh
