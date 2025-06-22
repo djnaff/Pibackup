@@ -40,9 +40,9 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-# Check if device exists using lsblk
-if ! lsblk | grep -q "$(basename "$SD_DEVICE")"; then
-  echo "❌ Device $SD_DEVICE does not exist or is not detected by lsblk."
+# Check if device exists
+if [[ ! -b "$SD_DEVICE" ]]; then
+  echo "❌ Device $SD_DEVICE does not exist or is not a block device."
   exit 1
 fi
 
