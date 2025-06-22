@@ -19,9 +19,9 @@
 
 # Defaults can be changed
 DEFAULT_DEVICE="/dev/mmcblk0"
-DEFAULT_BACKUP_PATH="/mnt/pibackups" #must be on a mounted drive and not local
+DEFAULT_BACKUP_PATH="/srv/dev-disk-by-label-elements/Legion/pibackups" #must be on a mounted drive and not local
 DEFAULT_RETENTION_DAYS=365
-DEFAULT_COMPRESSION=true
+DEFAULT_COMPRESSION=true #takes a long time but recovers more space
 PISHRINK_URL="https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh"
 PISHRINK_SCRIPT="/tmp/pishrink.sh"
 PISHRINK_CACHE="/usr/local/bin/pishrink.sh"
@@ -83,6 +83,24 @@ else
   echo "✅ All prerequisites are already installed."
 fi
 
+# Attempt to download latest PiShrink
+echo "🌐 Downloading latest PiShrink..."
+if curl -fsSL "$PISHRINK_URL" -o "$PISHRINK_SCRIPT"; then
+  chmod +x "$PISHRINK_SCRIPT"
+  cp "$PISHRINK_SCRIPT" "$PISHRINK_CACHE" 2>/dev/null
+  echo "✅ PiShrink downloaded and cached at $PISHRINK_CACHE"
+else
+  echo "⚠️ Failed to download latest PiShrink."
+  if [[ -x "$PISHRINK_CACHE" ]]; then
+    echo "⚡ Using cached PiShrink from $PISHRINK_CACHE"
+    cp "$PISHRINK_CACHE" "$PISHRINK_SCRIPT"
+  else
+    echo "❌ No cached PiShrink available. Aborting."
+    exit 1
+  fi
+fi
+
+
 # Create fsck trigger
 touch /boot/forcefsck || {
   echo "❌ Failed to create fsck trigger."
@@ -104,23 +122,6 @@ fi
 # Remove fsck trigger
 rm -f /boot/forcefsck || echo "⚠️ Warning: Failed to remove fsck trigger."
 
-# Attempt to download latest PiShrink
-echo "🌐 Downloading latest PiShrink..."
-if curl -fsSL "$PISHRINK_URL" -o "$PISHRINK_SCRIPT"; then
-  chmod +x "$PISHRINK_SCRIPT"
-  cp "$PISHRINK_SCRIPT" "$PISHRINK_CACHE" 2>/dev/null
-  echo "✅ PiShrink downloaded and cached at $PISHRINK_CACHE"
-else
-  echo "⚠️ Failed to download latest PiShrink."
-  if [[ -x "$PISHRINK_CACHE" ]]; then
-    echo "⚡ Using cached PiShrink from $PISHRINK_CACHE"
-    cp "$PISHRINK_CACHE" "$PISHRINK_SCRIPT"
-  else
-    echo "❌ No cached PiShrink available. Aborting."
-    exit 1
-  fi
-fi
-
 # Shrink the image
 echo "📦 Running PiShrink..."
 if [[ "$COMPRESSION_ENABLED" == true ]]; then
@@ -135,7 +136,8 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Delete old backups
-echo "🧹 Deleting backups older than $RETENTION_DAYS days..."
+echo "  Deleting backups older than $RETENTION_DAYS days..."
 find "$BACKUP_PATH" -name "${HOSTNAME}.*.img" -type f -mtime +"$RETENTION_DAYS" -delete
 
 echo "✅ Backup completed successfully: $BACKUP_FILE"
+
